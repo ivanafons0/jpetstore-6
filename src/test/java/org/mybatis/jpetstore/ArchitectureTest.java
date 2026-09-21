@@ -72,10 +72,30 @@ class ArchitectureTest {
   static final ArchRule servicesShouldResideInServicePackage = classes().that().areAnnotatedWith(Service.class).should()
       .resideInAPackage("..service..").because("Spring only scans that package for services");
 
+  // comprobar que los servicios solo dependen del JDK, del dominio, de los mappers y de las anotaciones de Spring que
+  // necesitan (@Service y @Transactional), para que no usen nada de HTTP
+  @ArchTest
+  static final ArchRule servicesShouldOnlyDependOnAllowedPackages = classes().that().resideInAPackage("..service..")
+      .should().onlyDependOnClassesThat().resideInAnyPackage("java..", "..domain..", "..mapper..", "..service..",
+          "org.springframework.stereotype..", "org.springframework.transaction..")
+      .because("services must not know about HTTP");
+
+  // comprobar que @Transactional (en métodos o en clases) solo se usa en los servicios
+  @ArchTest
+  static final ArchRule transactionalOnlyInServices = noClasses().that().resideOutsideOfPackage("..service..").should()
+      .dependOnClassesThat().haveSimpleName("Transactional")
+      .because("transaction boundaries belong to the service layer");
+
   // comprobar que los mappers son interfaces terminadas en Mapper, para que MyBatis las implemente con su XML
   @ArchTest
   static final ArchRule mappersShouldBeInterfaces = classes().that().resideInAPackage("..mapper..").should()
       .beInterfaces().andShould().haveSimpleNameEndingWith("Mapper");
+
+  // comprobar que los mappers solo dependen del JDK y del dominio, para que no usen Spring, HTTP ni otras capas
+  @ArchTest
+  static final ArchRule mappersShouldOnlyDependOnDomain = classes().that().resideInAPackage("..mapper..").should()
+      .onlyDependOnClassesThat().resideInAnyPackage("java..", "..domain..", "..mapper..")
+      .because("mappers only translate between the database and domain objects");
 
   // comprobar que no hay dependencias cíclicas entre los paquetes de primer nivel (web, service, mapper, domain...)
   @ArchTest
