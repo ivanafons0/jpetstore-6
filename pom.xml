@@ -285,6 +285,18 @@
             </daemon>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <configuration>
+            <!-- mybatis-parent solo activa 2 detectores y avisos de confianza alta: aquí se usan todos -->
+            <visitors combine.self="override" />
+            <threshold>Low</threshold>
+            <effort>Max</effort>
+            <failOnError>false</failOnError>
+            <excludeFilterFile>config/spotbugs/spotbugs-exclude.xml</excludeFilterFile>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
