@@ -65,6 +65,52 @@ class CartPropertiesTest {
     assertThat(cart.getSubTotal()).isEqualByComparingTo(expectedTotal);
   }
 
+  @Property
+  void cartRemainsConsistentForLargeGeneratedQuantities(
+      @ForAll @IntRange(min = 1, max = 1000) int quantity,
+      @ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+
+    for (int index = 0; index < quantity; index++) {
+      cart.addItem(item, true);
+    }
+
+    assertThat(cart.getNumberOfItems()).isOne();
+    assertThat(cart.getCartItemList().get(0).getQuantity()).isEqualTo(quantity);
+    assertThat(cart.getSubTotal())
+        .isEqualByComparingTo(item.getListPrice().multiply(BigDecimal.valueOf(quantity)));
+  }
+
+  @Property
+  void changingAnItemPriceKeepsLineTotalAndSubtotalConsistent(
+      @ForAll @IntRange(min = 1, max = 20) int quantity,
+      @ForAll @IntRange(min = 1, max = 100000) int initialPriceInCents,
+      @ForAll @IntRange(min = 1, max = 100000) int updatedPriceInCents) {
+    Item item = itemWithPrice(initialPriceInCents);
+    Cart cart = new Cart();
+    cart.addItem(item, true);
+    cart.setQuantityByItemId(item.getItemId(), quantity);
+
+    item.setListPrice(BigDecimal.valueOf(updatedPriceInCents, 2));
+
+    assertThat(cart.getCartItemList().get(0).getTotal())
+        .isEqualByComparingTo(cart.getSubTotal());
+  }
+
+  @Property
+  void settingQuantityNeverLeavesANegativeCartQuantity(
+      @ForAll @IntRange(min = -100, max = -1) int invalidQuantity,
+      @ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+    cart.addItem(item, true);
+
+    cart.setQuantityByItemId(item.getItemId(), invalidQuantity);
+
+    assertThat(cart.getCartItemList().get(0).getQuantity()).isGreaterThanOrEqualTo(0);
+  }
+
   private static Item itemWithPrice(int priceInCents) {
     Item item = new Item();
     item.setItemId("generated-item");
