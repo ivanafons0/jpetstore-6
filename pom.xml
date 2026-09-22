@@ -321,6 +321,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.25.8</version>
+          <configuration>
+              <targetTests>
+                  <param>org.mybatis.jpetstore.*Test</param>
+              </targetTests>
+              <excludedTestClasses>
+                  <param>org.mybatis.jpetstore.ScreenTransitionIT</param>
+              </excludedTestClasses>
+          </configuration>
+          <dependencies>
+              <dependency>
+                  <groupId>org.pitest</groupId>
+                  <artifactId>pitest-junit5-plugin</artifactId>
+                  <version>1.2.3</version>
+              </dependency>
+          </dependencies>
+      </plugin>
     </plugins>
   </build>
 
