@@ -5,19 +5,57 @@
 
 <module name="Checker">
 
+    <!-- Longitud máxima de línea -->
     <module name="LineLength">
         <property name="max" value="100"/>
     </module>
 
     <module name="TreeWalker">
+
+        <!-- Javadoc -->
         <module name="JavadocMethod"/>
+        <module name="JavadocType"/>
+        <module name="MissingJavadocType"/>
+
+        <!-- Imports -->
         <module name="AvoidStarImport"/>
+        <module name="UnusedImports"/>
+        <module name="CustomImportOrder"/>
+
+        <!-- Whitespace / formato -->
         <module name="EmptyLineSeparator"/>
         <module name="NeedBraces"/>
         <module name="OneStatementPerLine"/>
         <module name="WhitespaceAround"/>
+        <module name="WhitespaceAfter"/>
+
+        <!-- Naming -->
+        <module name="TypeName"/>
+        <module name="MethodName"/>
+        <module name="MemberName"/>
         <module name="ParameterName"/>
         <module name="LocalVariableName"/>
+        <module name="ClassTypeParameterName"/>
+
+        <!-- Visibilidad -->
+        <module name="VisibilityModifier"/>
+
+        <!-- Coding -->
+        <module name="MagicNumber"/>
+        <module name="EqualsHashCode"/>
+        <module name="ReturnCount"/>
+        <module name="FinalClass"/>
+
+        <!-- Métricas -->
+        <module name="MethodLength"/>
+        <module name="ClassFanOutComplexity"/>
+
+        <!-- Comentarios -->
+        <module name="TodoComment"/>
+
+        <!-- Expresiones regulares -->
+        <module name="Regexp"/>
+
     </module>
 
 </module>
