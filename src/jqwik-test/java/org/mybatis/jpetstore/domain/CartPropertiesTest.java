@@ -111,6 +111,61 @@ class CartPropertiesTest {
     assertThat(cart.getCartItemList().get(0).getQuantity()).isGreaterThanOrEqualTo(0);
   }
 
+  @Property
+  void removingAnExistingItemLeavesTheCartEmpty(
+      @ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+    cart.addItem(item, false);
+
+    Item removedItem = cart.removeItemById(item.getItemId());
+
+    assertThat(removedItem).isSameAs(item);
+    assertThat(cart.containsItemId(item.getItemId())).isFalse();
+    assertThat(cart.getCartItemList()).isEmpty();
+    assertThat(cart.getSubTotal()).isEqualByComparingTo(BigDecimal.ZERO);
+  }
+
+  @Property
+  void incrementingAnItemUpdatesQuantityAndTotal(
+      @ForAll @IntRange(min = 1, max = 20) int initialQuantity,
+      @ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+    cart.addItem(item, true);
+    cart.setQuantityByItemId(item.getItemId(), initialQuantity);
+
+    cart.incrementQuantityByItemId(item.getItemId());
+
+    int expectedQuantity = initialQuantity + 1;
+    assertThat(cart.getCartItemList().get(0).getQuantity()).isEqualTo(expectedQuantity);
+    assertThat(cart.getCartItemList().get(0).getTotal())
+        .isEqualByComparingTo(item.getListPrice().multiply(BigDecimal.valueOf(expectedQuantity)));
+  }
+
+  @Property
+  void addingSameItemKeepsTheFirstStockState(
+      @ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+
+    cart.addItem(item, false);
+    cart.addItem(item, true);
+
+    assertThat(cart.getNumberOfItems()).isOne();
+    assertThat(cart.getCartItemList().get(0).isInStock()).isFalse();
+    assertThat(cart.getCartItemList().get(0).getQuantity()).isEqualTo(2);
+  }
+
+  @Property
+  void getCartItemsIsAccessible(@ForAll @IntRange(min = 1, max = 100000) int priceInCents) {
+    Item item = itemWithPrice(priceInCents);
+    Cart cart = new Cart();
+    cart.addItem(item, true);
+
+    assertThat(cart.getCartItems()).isNotNull();
+  }
+
   private static Item itemWithPrice(int priceInCents) {
     Item item = new Item();
     item.setItemId("generated-item");
