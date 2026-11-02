@@ -249,6 +249,20 @@
       <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- JETM: medición de tiempos de ejecución (tests de rendimiento, perfil jetm) -->
+    <dependency>
+      <groupId>fm.void.jetm</groupId>
+      <artifactId>jetm</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>fm.void.jetm</groupId>
+      <artifactId>jetm-optional</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -320,6 +334,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Los tests de rendimiento (JETM) solo se ejecutan con el perfil jetm -->
+          <excludedGroups>performance</excludedGroups>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -568,6 +590,23 @@
                   <url>${cargo.maven.containerUrl}</url>
                 </zipUrlInstaller>
               </container>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Tests de rendimiento con JETM: ./mvnw -P jetm test -->
+    <profile>
+      <id>jetm</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <groups>performance</groups>
+              <excludedGroups combine.self="override" />
             </configuration>
           </plugin>
         </plugins>
