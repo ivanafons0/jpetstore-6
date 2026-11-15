@@ -18,7 +18,7 @@ El perfil Maven `jqwik`:
 2. añade la dependencia `net.jqwik:jqwik`; y
 3. limita Surefire a las clases cuyo nombre termina en `PropertiesTest`.
 
-La configuración está en el perfil `jqwik` de [pom.xml](pom.xml), no en la
+La configuración está en el perfil `jqwik` de [pom.xml](../pom.xml), no en la
 carpeta de pruebas existente.
 
 ## Cómo se han diseñado las pruebas
@@ -39,7 +39,7 @@ Las propiedades están organizadas por capas:
 - `ControllerPropertiesTest`: redirección raíz y validación de rutas de
   catálogo y carrito mediante modelos y sesiones públicos.
 
-En [CartPropertiesTest.java](src/jqwik-test/java/org/mybatis/jpetstore/domain/CartPropertiesTest.java)
+En [CartPropertiesTest.java](../src/jqwik-test/java/org/mybatis/jpetstore/domain/CartPropertiesTest.java)
 se comprueban:
 
 - **Pruebas funcionales:** añadir el mismo artículo acumula la cantidad y su

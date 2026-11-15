@@ -36,7 +36,8 @@ líneas **están realmente verificadas** por las aserciones de los tests.
 | Archivo | Carpeta | Tipo de cambio | Descripción |
 | --- | --- | --- | --- |
 | `pom.xml` | raíz del proyecto | Modificado | Se añade el plugin `pitest-maven` dentro de `<build><plugins>` y se excluyen los tests de rendimiento de JETM. |
-| `piTest.md` | raíz del proyecto | Creado | Este informe. |
+| `piTest.md` | `informes/` | Creado | Resumen de la herramienta. |
+| `piTest-detallado.md` | `informes/` | Creado | Este informe. |
 
 **No se ha modificado ningún fichero de código fuente ni de tests** (`src/main/java`, `src/test/java`,
 `src/jqwik-test/java`): la herramienta se ha integrado únicamente a nivel de configuración de build.

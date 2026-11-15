@@ -25,7 +25,8 @@ En este proyecto (JPetStore 6) se ha integrado CheckStyle mediante el plugin de 
 | --- | --- | --- | --- |
 | `pom.xml` | raíz del proyecto | Modificado | Se añade el plugin `maven-checkstyle-plugin` dentro de `<build><pluginManagement><plugins>`. |
 | `checkstyle.xml` | `config/checkstyle/` (carpeta nueva) | Creado | Define el conjunto de reglas (módulos) que aplica CheckStyle. |
-| `CheckStyle.md` | raíz del proyecto | Creado | Este informe. |
+| `CheckStyle.md` | `informes/` | Creado | Resumen de la herramienta. |
+| `CheckStyle-detallado.md` | `informes/` | Creado | Este informe. |
 
 **No se ha modificado ningún fichero de código fuente** (`src/main/java`, `src/test/java`): la
 herramienta se ha integrado únicamente a nivel de configuración de build, y las violaciones detectadas
