@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.mybatis</groupId>
     <artifactId>mybatis-parent</artifactId>
-    <version>52</version>
+    <version>53</version>
     <relativePath />
   </parent>
 
@@ -59,8 +59,8 @@
 
   <properties>
     <!-- Java Usage -->
-    <java.version>8</java.version>
-    <java.release.version>8</java.release.version>
+    <java.version>11</java.version>
+    <java.release.version>11</java.release.version>
 
     <!-- Configuration -->
     <clirr.comparisonVersion>6.0.2</clirr.comparisonVersion>
@@ -68,15 +68,15 @@
 
     <!-- Library Versions -->
     <assertj.version>3.27.7</assertj.version>
-    <byte-buddy.version>1.18.13</byte-buddy.version>
+    <byte-buddy.version>1.18.17</byte-buddy.version>
     <commons-logging.version>1.4.0</commons-logging.version>
     <hsqldb.version>2.7.4</hsqldb.version>
-    <mockito.version>5.23.0</mockito.version>
-    <slf4j.version>2.0.19</slf4j.version>
+    <mockito.version>5.24.0</mockito.version>
+    <slf4j.version>2.0.20</slf4j.version>
     <spring.version>5.3.39</spring.version>
 
     <!-- Plugin Versions -->
-    <cargo-maven3-plugin.version>1.10.28</cargo-maven3-plugin.version>
+    <cargo-maven3-plugin.version>1.10.30</cargo-maven3-plugin.version>
 
     <!-- Automatic Module Name -->
     <module.name>org.mybatis.jpetstore</module.name>
@@ -93,7 +93,7 @@
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-bom</artifactId>
-        <version>4.49.0</version>
+        <version>4.52.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -105,14 +105,13 @@
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
-      <version>3.5.19</version>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis-spring</artifactId>
       <version>2.1.2</version>
     </dependency>
-
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
@@ -210,6 +209,13 @@
     </dependency>
 
     <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
@@ -232,14 +238,14 @@
     <dependency>
       <groupId>com.codeborne</groupId>
       <artifactId>selenide</artifactId>
-      <version>7.18.1</version>
+      <version>7.19.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>htmlunit3-driver</artifactId>
-      <version>4.48.0</version>
+      <version>4.52.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -249,12 +255,45 @@
       <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- JETM: medición de tiempos de ejecución (tests de rendimiento, perfil jetm) -->
+    <dependency>
+      <groupId>fm.void.jetm</groupId>
+      <artifactId>jetm</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>fm.void.jetm</groupId>
+      <artifactId>jetm-optional</artifactId>
+      <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <finalName>jpetstore</finalName>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.6.1</version>
+          <executions>
+            <execution>
+              <id>add-jqwik-test-source</id>
+              <phase>generate-test-sources</phase>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/jqwik-test/java</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
@@ -263,7 +302,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -283,6 +322,35 @@
                 <cargo.daemon.handleid>${project.artifactId}</cargo.daemon.handleid>
               </properties>
             </daemon>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.6.0</version>
+
+          <configuration>
+            <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+          </configuration>
+
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>14.1.0</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <configuration>
+            <!-- mybatis-parent solo activa 2 detectores y avisos de confianza alta: aquí se usan todos -->
+            <visitors combine.self="override" />
+            <threshold>Low</threshold>
+            <effort>Max</effort>
+            <failOnError>false</failOnError>
+            <excludeFilterFile>config/spotbugs/spotbugs-exclude.xml</excludeFilterFile>
           </configuration>
         </plugin>
       </plugins>
@@ -341,12 +409,50 @@
               </dependency>
           </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Los tests de rendimiento (JETM) solo se ejecutan con el perfil jetm -->
+          <excludedGroups>performance</excludedGroups>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
   <profiles>
 
     <!-- Profiles for Application Server (tomcat first as preferred then alpha order) -->
+
+    <profile>
+      <id>jqwik</id>
+
+      <dependencies>
+        <dependency>
+          <groupId>net.jqwik</groupId>
+          <artifactId>jqwik</artifactId>
+          <version>1.10.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*PropertiesTest.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>tomcat9</id>
       <activation>
@@ -588,6 +694,23 @@
                   <url>${cargo.maven.containerUrl}</url>
                 </zipUrlInstaller>
               </container>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Tests de rendimiento con JETM: ./mvnw -P jetm test -->
+    <profile>
+      <id>jetm</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <groups>performance</groups>
+              <excludedGroups combine.self="override" />
             </configuration>
           </plugin>
         </plugins>
