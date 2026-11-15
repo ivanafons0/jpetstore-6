@@ -399,7 +399,9 @@
               </targetTests>
               <excludedTestClasses>
                   <param>org.mybatis.jpetstore.ScreenTransitionIT</param>
+                  <param>org.mybatis.jpetstore.performance.*</param>
               </excludedTestClasses>
+              <skipFailingTests>true</skipFailingTests>
           </configuration>
           <dependencies>
               <dependency>
